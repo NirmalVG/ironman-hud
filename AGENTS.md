@@ -236,6 +236,16 @@ This project operates on a strict zero-external-data policy.
 - Time/temperature slot → local device clock (useLocalTime hook)
 - All ML inference → TensorFlow.js on-device (COCO-SSD)
 
+## Approved External Services
+
+| Service                                 | What's Sent                                           | What's NOT Sent                        |
+| --------------------------------------- | ----------------------------------------------------- | -------------------------------------- |
+| Gemini 2.0 Flash-Lite (via /api/jarvis) | Voice transcript, object names, heading, battery, fps | GPS coordinates, camera frames, images |
+
+All Gemini calls go through /api/jarvis serverless function.
+The API key lives in Vercel env vars — never in client code.
+GPS coordinates must never be added to the Gemini context.
+
 _Project: IRONMAN-HUD-01 · Author: Nirmal · License: MIT · Budget: ₹0_
 
 <!-- END:nextjs-agent-rules -->

@@ -15,6 +15,8 @@ import { HudTopRight } from "@/components/hud/HudTopRight"
 import { HudReticle } from "@/components/hud/HudReticle"
 import { HudBottomBar } from "@/components/hud/HudBottomBar"
 import { ModelLoadingOverlay } from "@/components/hud/ModelLoadingOverlay"
+import { VoiceButton } from "@/components/hud/VoiceButton"
+import { ConversationPanel } from "@/components/hud/ConversationPanel"
 
 export function CameraFeed() {
   const { videoRef, canvasRef, status, error } = useCamera()
@@ -65,7 +67,7 @@ export function CameraFeed() {
       {/* ── Layer 3 — Scanlines overlay ────────────────────────────────── */}
       <ScanlineOverlay />
 
-      {/* ── Layer 4 — HUD panels ──────────────────────────────────────── */}
+      {/* ── Layer 4 — HUD panels (pointer-events-none by default) ─────── */}
       <div className="absolute inset-0 z-20 pointer-events-none">
         {/* Top left — system status + low power toggle */}
         <div className="absolute top-6 left-4">
@@ -89,10 +91,17 @@ export function CameraFeed() {
         >
           <HudBottomBar />
         </div>
+
+        {/* Voice button — only after boot completes */}
+        {bootStage === "online" && (
+          <div className="pointer-events-auto">
+            <VoiceButton />
+          </div>
+        )}
       </div>
 
       {/* ── Layer 5 — Neural network loading overlay ───────────────────── */}
-      {status === "active" && <ModelLoadingOverlay />}
+      <ModelLoadingOverlay />
 
       {/* ── Layer 6 — Battery critical warning ────────────────────────── */}
       {batteryLow && (
@@ -112,7 +121,10 @@ export function CameraFeed() {
         </div>
       )}
 
-      {/* ── Layer 7 — Camera permission states ────────────────────────── */}
+      {/* ── Layer 7 — Conversation panel (slides in from right) ────────── */}
+      <ConversationPanel />
+
+      {/* ── Layer 8 — Camera permission states ────────────────────────── */}
       {status === "requesting" && (
         <div className="absolute inset-0 z-30 flex items-center justify-center">
           <div className="text-center space-y-4">

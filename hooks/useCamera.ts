@@ -58,8 +58,32 @@ export function useCamera(): UseCameraReturn {
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream
-          await videoRef.current.play()
-          setStatus("active")
+
+          // Wait for video to actually start playing
+          const playPromise = videoRef.current.play()
+
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log("[Camera] Video playing successfully")
+                if (!cancelled) {
+                  setStatus("active")
+                }
+              })
+              .catch((playErr) => {
+                console.error("[Camera] Video play failed:", playErr)
+                if (!cancelled) {
+                  setStatus("error")
+                  setError(`Failed to start video playback: ${playErr.message}`)
+                }
+              })
+          } else {
+            // Fallback for browsers that don't support play() promise
+            console.log("[Camera] Using play() without promise")
+            if (!cancelled) {
+              setStatus("active")
+            }
+          }
         }
       } catch (err) {
         if (cancelled) return
